@@ -1,1 +1,1 @@
-# AI-ConnectPy
+# AI Connector for Python
