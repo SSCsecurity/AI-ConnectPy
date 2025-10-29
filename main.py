@@ -82,7 +82,7 @@ def violates_moderation(text):
     data = "{" + '"input": ' + f'"{text}"' + "}"
     data = data.encode("utf-8")
     try:
-        ret = requests.post("https://api.openai.com/v1/moderations", headers=headers, data=data, timeout=5)
+        ret = requests.post("https://api.openai.com/v1/moderations", headers=headers, data={"model": "gpt-4o-mini"}, timeout=5)
         flagged = ret.json()["results"][0]["flagged"]
     except requests.exceptions.RequestException as e:
         flagged = False
