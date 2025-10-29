@@ -51,7 +51,7 @@ def get_eval_next(content: str, max_tokens: int):
     while True:
         try:
             response = openai.ChatCompletion.create(
-                model='gpt-4',
+                model='gpt-4o',
                 messages=[{
                     'role': 'system',
                     'content': 'You are an assistant for validating the results.'
@@ -100,7 +100,7 @@ def get_answer(question_id: int, question: str, max_tokens: int):
     for _ in range(3):
         try:
             response = openai.ChatCompletion.create(
-                model='gpt-3.5-turbo',
+                model='gpt-4-turbo',
                 messages=[{
                     'role': 'system',
                     'content': 'You are a helpful assistant.'
