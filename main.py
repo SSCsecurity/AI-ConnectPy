@@ -12,10 +12,12 @@ import argparse
 import json
 
 import openai
+import anthropic
 import ray
 
 
 AGENTS = ["Claude", "GPT-4.5", "Gemini", "o3", "Mistral", "DeepSeek"]
+ANTHROPIC_MODELS = []
 NUM_SECONDS_TO_SLEEP = 3
 MODEL = 'gpt-3.5-turbo'
 MODEL_ID = 'gpt-3.5-turbo:20230327'
@@ -117,7 +119,81 @@ def get_answer(question_id: int, question: str, max_tokens: int):
             ans['text'] = '#ERROR#'
             time.sleep(1)
     return ans
-  
+
+
+def get_eval_next1(content: str, max_tokens: int):
+    while True:
+        try:
+            client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+            response = client.messages.create(
+                model='claude-3-opus-20240229',
+                max_tokens=max_tokens,
+                temperature=0.2,
+                system='Act as if you were a helpful assistant for checking the answer.',
+                messages=[{
+                    'role': 'user',
+                    'content': content,
+                }]
+            )
+            break
+        except anthropic.RateLimitError:
+            pass
+        except Exception as e:
+            print(e)
+        time.sleep(NUM_SECONDS_TO_SLEEP)
+
+    print('success!')
+    return response.content[0].text
+
+
+def get_eval_next2(content: str, max_tokens: int):
+    while True:
+        try:
+            response = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"]).messages.create(
+                model='claude-3-5-sonnet-20241022',
+                max_tokens=max_tokens,
+                temperature=0.3,
+                system='Act as a helpful and precise assistant for checking the quality of the answer.',
+                messages=[{
+                    'role': 'user',
+                    'content': content,
+                }]
+            )
+            break
+        except anthropic.RateLimitError:
+            pass
+        except Exception as e:
+            print(e)
+        time.sleep(NUM_SECONDS_TO_SLEEP)
+
+    print('success!')
+    return response.content[0].text
+
+
+def get_eval_next3(content: str, max_tokens: int):
+    while True:
+        try:
+            client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+            response = client.messages.create(
+                model='claude-3-haiku-20240307',
+                max_tokens=max_tokens,
+                temperature=0.2,
+                system='Act as a helpful and precise assistant for validating the answer.',
+                messages=[
+                    {'role': 'user', 'content': content}
+                ]
+            )
+            break
+        except anthropic.RateLimitError:
+            pass
+        except Exception as e:
+            print(e)
+        time.sleep(NUM_SECONDS_TO_SLEEP)
+
+    print('success!')
+    return response.content[0].text
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ChatGPT-based QA evaluation.')
