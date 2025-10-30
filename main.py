@@ -4,6 +4,7 @@ AI Connector Python
 The main entry point for the application.
 """
 
+import requests
 import time
 import random
 from datetime import datetime
@@ -193,6 +194,24 @@ def get_eval_next3(content: str, max_tokens: int):
     print('success!')
     return response.content[0].text
 
+def get_eval(content: str, max_tokens: int):
+    response = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": os.environ["ANTHROPIC_API_KEY"],
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        },
+        json={
+            "model": "claude-3-sonnet-20240229",
+            "max_tokens": max_tokens,
+            "temperature": 0.2,
+            "system": "You are an assistant for checking the answer's quality.",
+            "messages": [{"role": "user", "content": content}]
+        }
+    )
+    
+    return response.json()['content'][0]['text']
 
 
 if __name__ == '__main__':
