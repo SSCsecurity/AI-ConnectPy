@@ -23,6 +23,8 @@ NUM_SECONDS_TO_SLEEP = 3
 MODEL = 'gpt-3.5-turbo'
 MODEL_ID = 'gpt-3.5-turbo:20230327'
 
+DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
+
 @ray.remote(num_cpus=4)
 def get_eval(content: str, max_tokens: int):
     while True:
@@ -212,6 +214,77 @@ def get_eval(content: str, max_tokens: int):
     )
     
     return response.json()['content'][0]['text']
+
+
+def get_eval_next_deepseek(content: str, max_tokens: int):
+    while True:
+        try:
+
+            deepseek_client = OpenAI(
+                api_key=os.environ["DEEPSEEK_API_KEY"],
+                base_url="https://api.deepseek.com"
+            )
+            response = deepseek_client.chat.completions.create(
+                model="deepseek-chat",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an assistant for validating the results."
+                    },
+                    {
+                        "role": "user",
+                        "content": content
+                    }
+                ],
+                temperature=0.2,
+                max_tokens=max_tokens,
+            )
+            break
+
+        except Exception as e:
+            # DeepSeek returns rate-limit errors as normal exceptions
+            print(e)
+
+        time.sleep(NUM_SECONDS_TO_SLEEP)
+
+    return response.choices[0].message.content
+
+
+def get_eval_next_deepseek2(content: str, max_tokens: int):
+    while True:
+        try:
+            response = requests.post(
+                DEEPSEEK_URL,
+                headers={
+                    "Authorization": f"Bearer " + os.environ["DEEPSEEK_API_KEY"],
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": "deepseek-chat",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are an assistant for validating the results."
+                        },
+                        {
+                            "role": "user",
+                            "content": content
+                        }
+                    ],
+                    "temperature": 0.2,
+                    "max_tokens": max_tokens,
+                },
+                timeout=30,
+            )
+
+            response.raise_for_status()
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
+
+        except Exception as e:
+            print(e)
+            time.sleep(NUM_SECONDS_TO_SLEEP)
+
 
 
 if __name__ == '__main__':
