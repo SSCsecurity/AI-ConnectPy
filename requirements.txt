@@ -1,0 +1,20 @@
+# LLM SDKs
+langchain==0.1.0
+langchain-core==0.1.0
+litellm==1.0.0
+cohere==4.40.0
+groq==0.4.0
+together==0.2.0
+replicate==0.22.0
+mistralai==0.1.0
+
+# Frameworks
+llama-index==0.10.0
+instructor==0.5.0
+
+# Embeddings / Vector stores
+sentence-transformers==2.3.0
+tiktoken==0.5.0
+chromadb==0.4.0
+pinecone-client==3.0.0
+faiss-cpu==1.7.4
