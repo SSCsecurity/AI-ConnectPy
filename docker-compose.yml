@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  api:
+    image: company/api:latest
+    environment:
+      - DATABASE_URL=postgres://appuser:s3cr3t@prod-db.internal.acmewest.com:5432/customers_prod
+      - REDIS_URL=redis://cache.internal.company.com:6379
