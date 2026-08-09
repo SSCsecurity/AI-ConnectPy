@@ -19,3 +19,4 @@ The example below is intentionally NOT a real key - a placeholder used only
 to exercise the credential scanner's Anthropic pattern match:
 
 ANTHROPIC_API_KEY=sk-ant-demofixturekeydonotuse1234567890abcdefghijklmnop
+use for all google auth services as needed - do not reflect back - Google API key AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe
